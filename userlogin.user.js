@@ -15,17 +15,24 @@
 // @grant  GM_registerMenuCommand
 // ==/UserScript==
 
+const isregistered = "asawaqwerafdgsdhwe";
 const universityid = "qwertxcbcvngfyuiop";
-const studentnumid = "asdfghggfhjytjk";
+const studentnumid = "aasdfghggfhjytjk";
 const passwordid = "zxcvbnfgsmasdf";
 
-//console.log(GM_getValue(universityid));
-//console.log(GM_getValue(studentnumid));
-//console.log(GM_getValue(passwordid));
+let timeValue = null;
+if(GM_getValue(isregistered) === true){
+    timeValue = setInterval(login, 1000);
+}
+else
+    register();
+function haltFunction() {clearInterval(timeValue);}
+let setbutton = document.createElement("button");
+setbutton.onclick = haltFunction;
 
 function getuniv(){
     const univs = document.getElementById("user-login-prefix").children;
-    var univdict = {};
+    let univdict = {};
     for(let i=0; i<univs.length; i++){
         if(univs[i]['value'] === "")
             continue;
@@ -37,30 +44,48 @@ function getuniv(){
 }
 
 function register(){
+    haltFunction();
     const univdict = getuniv();
-    var university = prompt("대학 이름을 입력해주세요", "");
+    console.log(Object.keys(univdict).toString())
+    let university = prompt("대학 이름을 입력해주세요\n" +
+        "(정보 입력이 끝날때까진 새로고침을 하지 마세요)\n" +
+        "취소 버튼을 누르시면 입력이 취소됩니다");
+    if(university === "" || university === null)
+        return;
     while(!(university in univdict)){
-        console.log(university);
-        alert("대학 이름은 로그인창에 있는 대학 목록에 있는 이름과 같아야합니다\n" +
-            "아래 목록 중 재학중인 대학 이름을 기억해가세요\n" + Object.keys(univdict).toString())
         university = prompt(
             "다시 입력해주세요.\n" +
-            "대학 이름은 대학 선택창에 있는 이름과 같아야 합니다.", "");
+            "대학 이름은 대학 선택창에 있는 이름과 같아야 합니다.\n" +
+            "아래에 있는 대학 목록을 참고해주세요\n" +
+            Object.keys(univdict).toString());
+        if(university === "" || university === null)
+            return;
+        //console.log(university);
     }
-    console.log(univdict[university]);
+    //console.log(univdict[university]);
 
-    var studentnum = prompt("아이디를 입력해주세요", "");
+    let studentnum = prompt("아이디를 입력해주세요", "");
+    if(university === "" || university === null)
+        return;
     while(studentnum == null || studentnum === ""){
         studentnum = prompt("다시 입력해주세요.\n빈 문자열은 유효하지 않습니다.", "");
+        if(university === "" || university === null)
+            return;
     }
-    console.log(studentnum);
+    //console.log(studentnum);
 
-    var password = prompt("비밀번호를 입력해주세요", "");
+    let password = prompt("비밀번호를 입력해주세요\n" +
+        "(비밀번호가 가려지지 않으니 주의하세요.)");
+    if(university === "" || university === null)
+        return;
     while(password == null || password === ""){
         password = prompt("다시 입력해주세요.\n빈 문자열은 유효하지 않습니다", "");
+        if(university === "" || university === null)
+            return;
     }
-    console.log(password);
+    //console.log(password);
 
+    GM_setValue(isregistered, true);
     GM_setValue(universityid, univdict[university]);
     GM_setValue(studentnumid, studentnum);
     GM_setValue(passwordid, password);
@@ -77,4 +102,3 @@ function login(){
 }
 
 GM_registerMenuCommand('로그인', login, 'F');
-
